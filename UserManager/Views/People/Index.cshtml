@@ -1,0 +1,81 @@
+﻿
+@{
+    ViewBag.Title = "Index";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<h2>All Users</h2>
+
+<p><button type="button" class="btn btn-sm btn-success pull-right" onclick="addUser()">Add New user</button></p>
+
+<table class="table table-striped" id="peopleList">
+    <thead>
+        <tr>
+            <th>First Name</th>
+            <th>Surname</th>
+            <th>Age</th>
+            <th>Height</th>
+            <th>Hair color</th>
+            <th>Weight</th>
+        </tr>
+    </thead>
+</table>
+
+<div class="modal fade" role="dialog" id="addUserModal" aria-labelledby="addUserModal" aria-hidden="true">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content" id="addUserModalBody">
+
+        </div>
+    </div>
+</div>
+
+@section scripts{
+    <script type="text/javascript">
+    $("#peopleList").DataTable({
+        "ajax": {
+            "url": "/People/GetPeople",
+            "type": "GET",
+            "datatype": "json"
+        },
+        "columns": [
+            { "data": "FirstName", "autowidth": true },
+            { "data": "Surname", "autowidth": true },
+            { "data": "DateOfBirth", "autowidth": true },
+            { "data": "Height", "autowidth": true },
+            { "data": "HairColor", "autowidth": true },
+            { "data": "Weight", "autowidth": true },
+        ]
+    });
+
+    function addUser(id) {
+        $.get("/People/GetPeoplePartial", { id: id }, function (res) {
+            $("#addUserModalBody").html(res);
+            $("#addUserModal").modal('show');
+
+        })
+    }
+
+    //save user details
+    function createOrUpdate() {
+        var modal = $("#addUserModal");
+        var form = $('form[name= "peopleForm"]');
+
+        form.validate();
+        if (!form.validate()) {
+            return;
+        } else {
+            var data = form.serialize();
+            $.post("/People/CreateOrUpdatePeople", data, function (res) {
+                if (res) {
+                    modal.modal('hide');
+                }
+            })
+        }
+    }
+
+    </script>
+    }
+
+
+
+
