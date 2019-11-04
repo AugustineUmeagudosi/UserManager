@@ -30,48 +30,52 @@
 </div>
 
 @section scripts{
-    <script type="text/javascript">
-    $("#peopleList").DataTable({
-        "ajax": {
-            "url": "/People/GetPeople",
-            "type": "GET",
-            "datatype": "json"
-        },
-        "columns": [
-            { "data": "FirstName", "autowidth": true },
-            { "data": "Surname", "autowidth": true },
-            { "data": "DateOfBirth", "autowidth": true },
-            { "data": "Height", "autowidth": true },
-            { "data": "HairColor", "autowidth": true },
-            { "data": "Weight", "autowidth": true },
-        ]
-    });
+    <script>
 
-    function addUser(id) {
-        $.get("/People/GetPeoplePartial", { id: id }, function (res) {
-            $("#addUserModalBody").html(res);
-            $("#addUserModal").modal('show');
-
+    var dataTable;
+        $(document).ready(function () {
+            dataTable = $("#peopleList").DataTable({
+                "ajax": {
+                    "url": "/People/GetPeople",
+                    "type": "GET",
+                    "datatype": "json",
+                },
+                "columns": [
+                    { "data": "FirstName", "autowidth": true },
+                    { "data": "Surname", "autowidth": true },
+                    { "data": "DateOfBirth", "autowidth": true },
+                    { "data": "Height", "autowidth": true },
+                    { "data": "HairColor", "autowidth": true },
+                    { "data": "Weight", "autowidth": true },
+                ]
+            });
         })
-    }
+        function addUser(id) {
+            $.get("/People/GetPeoplePartial", { id: id }, function (res) {
+                $("#addUserModalBody").html(res);
+                $("#addUserModal").modal('show');
 
-    //save user details
-    function createOrUpdate() {
-        var modal = $("#addUserModal");
-        var form = $('form[name= "peopleForm"]');
-
-        form.validate();
-        if (!form.validate()) {
-            return;
-        } else {
-            var data = form.serialize();
-            $.post("/People/CreateOrUpdatePeople", data, function (res) {
-                if (res) {
-                    modal.modal('hide');
-                }
             })
         }
-    }
+
+        //save user details
+        function createOrUpdate() {
+            var modal = $("#addUserModal");
+            var form = $('form[name= "peopleForm"]');
+
+            form.validate();
+            if (!form.validate()) {
+                return;
+            } else {
+                var data = form.serialize();
+                $.post("/People/CreateOrUpdatePeople", data, function (res) {
+                    if (res) {
+                        modal.modal('hide');
+                        dataTable.ajax.reload();
+                    }
+                })
+            }
+        }
 
     </script>
     }
